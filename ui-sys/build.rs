@@ -45,7 +45,7 @@ fn main() {
             // When cross compiling, clang/gcc (correctly) errors on narrowing not allowed in c++11.
             // Disable that until libui fixes that.
             if target_os() == "windows" {
-                cfg.cxxflag("-Wno-c++11-narrowing");
+                //cfg.cxxflag("-Wno-c++11-narrowing");
             }
         }
 
@@ -64,7 +64,12 @@ fn main() {
     let libname = if msvc { "libui" } else { "ui" };
 
     println!("cargo:rustc-link-search=native={}", dst.display());
-    println!("cargo:rustc-link-lib={}", libname);
+    
+    if cfg!(feature = "static") {
+        println!("cargo:rustc-link-lib=static={}", libname);
+    } else {
+        println!("cargo:rustc-link-lib={}", libname);
+    }
 
     if cfg!(feature = "static") && target_os() == "linux" {
         let out = Command::new("pkg-config")
@@ -87,7 +92,7 @@ fn main() {
         }
     } else if cfg!(feature = "static") && target_os() == "windows" {
         for lib in &[
-            "comctl32", "ole32", "oleaut32", "d2d1", "uxtheme", "dwrite", "stdc++",
+            "user32", "gdi32", "comctl32", "ole32", "d2d1", "uxtheme", "dwrite",
         ] {
             println!("cargo:rustc-link-lib={}", lib);
         }
@@ -112,7 +117,7 @@ fn main() {
                 .status()
                 .expect("could not run windres");
 
-            println!("cargo:rustc-link-lib={}", prefix);
+            println!("cargo:rustc-link-lib=static={}", prefix);
         }
     }
 }
