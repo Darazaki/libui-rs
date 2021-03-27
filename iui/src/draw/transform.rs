@@ -1,4 +1,4 @@
-use std::mem;
+use std::mem::MaybeUninit;
 use std::ops::Mul;
 use ui_sys::{self, uiDrawMatrix};
 
@@ -19,7 +19,7 @@ impl Transform {
     /// Create a new Transform that does nothing.
     pub fn identity() -> Transform {
         unsafe {
-            let mut matrix = mem::uninitialized();
+            let mut matrix = MaybeUninit::uninit().assume_init();
             ui_sys::uiDrawMatrixSetIdentity(&mut matrix);
             Transform::from_ui_matrix(&matrix)
         }

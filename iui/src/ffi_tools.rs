@@ -1,9 +1,9 @@
 //! Utilities to manage the state of the interface to the libUI bindings.
 use libc::c_void;
 use std::mem;
-use std::sync::atomic::{AtomicBool, Ordering, ATOMIC_BOOL_INIT};
+use std::sync::atomic::{AtomicBool, Ordering};
 
-static INITIALIZED: AtomicBool = ATOMIC_BOOL_INIT;
+static INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 /// Set the global flag stating that libUI is initialized.
 ///
@@ -35,5 +35,5 @@ pub fn is_initialized() -> bool {
 
 // Transmute a void-void callback into a Box<Box<FnMut()>>> and call it
 pub extern "C" fn void_void_callback(data: *mut c_void) {
-    unsafe { mem::transmute::<*mut c_void, Box<Box<FnMut()>>>(data)() }
+    unsafe { mem::transmute::<*mut c_void, Box<Box<dyn FnMut()>>>(data)() }
 }
