@@ -38,7 +38,7 @@ fn main() {
     let mut dst;
     if cfg!(feature = "build") {
         let mut cfg = Config::new("libui");
-        cfg.build_target("").profile("release");
+        cfg.build_target("libui").profile("release");
 
         if cfg!(feature = "static") {
             cfg.define("BUILD_SHARED_LIBS", "OFF");
